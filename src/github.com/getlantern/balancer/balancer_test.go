@@ -193,8 +193,9 @@ func TestCheck(t *testing.T) {
 	assert.NoError(t, err)
 
 	// recheck failed dialer
-	// The check count is time sensitive, can't rely on WaitGroup
 	before := atomic.LoadUint32(&checkCount)
+	// Can't rely on WaitGroup to exactly match the check count. It's time sensitive.
+	// Adds a large enough delta to avoid wg.Done() panicking.
 	wg.Add(5)
 	atomic.StoreUint32(&failToDial, 1)
 	_, err = bal.Dial("tcp", "does-not-exist.com:80")
